@@ -1,17 +1,30 @@
 const mysql = require("mysql2");
 require("dotenv").config();
 
-// Create a connection pool (promise-based) instead of a single connection.
-// Pools automatically reconnect and handle concurrent requests safely.
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+let pool;
+
+if (process.env.DATABASE_URL) {
+  pool = mysql.createPool(process.env.DATABASE_URL);
+} else {
+  const config = {
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT, 10) || 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+  };
+
+  if (process.env.DB_SSL === "true" || process.env.NODE_ENV === "production") {
+    config.ssl = {
+      rejectUnauthorized: false,
+    };
+  }
+
+  pool = mysql.createPool(config);
+}
 
 const db = pool.promise();
 

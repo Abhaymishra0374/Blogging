@@ -23,11 +23,18 @@ const getUserById = async (id) => {
   return rows[0] || null;
 };
 
-const updateUser = async (id, { fullName, bio }) => {
-  await db.query(
-    "UPDATE users SET full_name = ?, bio = ? WHERE id = ?",
-    [fullName, bio, id]
-  );
+const updateUser = async (id, { fullName, bio, avatar }) => {
+  if (avatar) {
+    await db.query(
+      "UPDATE users SET full_name = ?, bio = ?, avatar = ? WHERE id = ?",
+      [fullName, bio, avatar, id]
+    );
+  } else {
+    await db.query(
+      "UPDATE users SET full_name = ?, bio = ? WHERE id = ?",
+      [fullName, bio, id]
+    );
+  }
   return getUserById(id);
 };
 

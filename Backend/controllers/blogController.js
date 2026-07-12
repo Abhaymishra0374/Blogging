@@ -149,6 +149,16 @@ const deleteBlog = async (req, res) => {
   }
 };
 
+const getGlobalStats = async (req, res) => {
+  try {
+    const stats = await blogModel.getGlobalStats();
+    res.status(200).json({ stats });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch global stats" });
+  }
+};
+
 module.exports = {
   getAllBlogs,
   getMyBlogs,
@@ -156,4 +166,5 @@ module.exports = {
   createBlog,
   updateBlog,
   deleteBlog,
+  getGlobalStats,
 };

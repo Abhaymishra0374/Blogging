@@ -111,11 +111,35 @@ const getMe = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { fullName, bio } = req.body;
+    let avatar = null;
+
+    if (req.file) {
+      avatar = `/uploads/${req.file.filename}`;
+      // remove old avatar file if it exists locally
+      if (req.user.avatar && req.user.avatar.startsWith("/uploads/")) {
+        const fs = require("fs");
+        const path = require("path");
+        const oldPath = path.join(__dirname, "..", req.user.avatar);
+        fs.unlink(oldPath, () => {});
+      }
+    }
+
     const updated = await userModel.updateUser(req.user.id, {
       fullName: fullName || req.user.full_name,
       bio: bio ?? req.user.bio,
+      avatar: avatar || req.user.avatar,
     });
-    res.status(200).json({ message: "Profile updated", user: updated });
+
+    res.status(200).json({
+      message: "Profile updated",
+      user: {
+        id: updated.id,
+        fullName: updated.full_name,
+        email: updated.email,
+        bio: updated.bio,
+        avatar: updated.avatar,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong. Please try again." });

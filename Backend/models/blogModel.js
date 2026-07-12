@@ -109,6 +109,20 @@ const countBlogsByAuthor = async (authorId) => {
   return rows[0];
 };
 
+const getGlobalStats = async () => {
+  const [blogRows] = await db.query(
+    "SELECT COUNT(*) AS totalBlogs, COALESCE(SUM(views), 0) AS totalViews FROM blogs"
+  );
+  const [authorRows] = await db.query(
+    "SELECT COUNT(*) AS totalAuthors FROM users"
+  );
+  return {
+    totalBlogs: blogRows[0].totalBlogs,
+    totalViews: blogRows[0].totalViews,
+    totalAuthors: authorRows[0].totalAuthors,
+  };
+};
+
 module.exports = {
   getAllBlogs,
   getBlogsByAuthor,
@@ -118,4 +132,5 @@ module.exports = {
   deleteBlog,
   incrementViews,
   countBlogsByAuthor,
+  getGlobalStats,
 };

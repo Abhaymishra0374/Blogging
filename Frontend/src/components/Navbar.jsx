@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { resolveImage } from "../constants/config";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -63,9 +64,15 @@ function Navbar() {
             <div className="d-flex align-items-center">
               <Link
                 to="/profile"
-                className="me-3 fw-semibold text-decoration-none"
+                className="d-flex align-items-center me-3 fw-semibold text-decoration-none text-dark"
               >
-                👋 {user.fullName}
+                <img
+                  src={resolveImage(user.avatar) || "https://api.dicebear.com/7.x/adventurer/svg?seed=" + user.fullName}
+                  alt="Avatar"
+                  className="rounded-circle me-2 border border-secondary"
+                  style={{ width: "32px", height: "32px", objectFit: "cover" }}
+                />
+                {user.fullName}
               </Link>
 
               <Link to="/dashboard" className="btn btn-success me-2">

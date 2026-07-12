@@ -1,7 +1,27 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import hero from "../assets/images/Hero.png";
+import API from "../api/axios";
 
 function Hero() {
+  const [stats, setStats] = useState({
+    totalBlogs: 0,
+    totalViews: 0,
+    totalAuthors: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await API.get("/blogs/stats/global");
+        setStats(res.data.stats);
+      } catch (err) {
+        console.error("Failed to fetch global stats:", err);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <section className="hero-section py-5">
       <div className="container">
@@ -41,18 +61,18 @@ function Hero() {
             <div className="row text-center">
 
               <div className="col-4">
-                <h3 className="fw-bold text-primary">10K+</h3>
-                <p>Readers</p>
+                <h3 className="fw-bold text-primary">{stats.totalViews}</h3>
+                <p className="text-secondary mb-0">Total Views</p>
               </div>
 
               <div className="col-4">
-                <h3 className="fw-bold text-primary">500+</h3>
-                <p>Blogs</p>
+                <h3 className="fw-bold text-primary">{stats.totalBlogs}</h3>
+                <p className="text-secondary mb-0">Blogs Published</p>
               </div>
 
               <div className="col-4">
-                <h3 className="fw-bold text-primary">150+</h3>
-                <p>Authors</p>
+                <h3 className="fw-bold text-primary">{stats.totalAuthors}</h3>
+                <p className="text-secondary mb-0">Active Writers</p>
               </div>
 
             </div>

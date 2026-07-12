@@ -15,9 +15,27 @@ const bookmarkRoutes = require("./routes/bookmarkRoutes");
 
 const app = express();
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:3000"
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      
+      // Clean origins by removing trailing slashes for comparison
+      const cleanOrigin = origin.replace(/\/$/, "");
+      const isAllowed = allowedOrigins.some(allowed => allowed.replace(/\/$/, "") === cleanOrigin);
+      
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS Policy: Origin ${origin} not allowed`));
+      }
+    },
     credentials: true,
   })
 );
